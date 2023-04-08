@@ -157,17 +157,20 @@
             let tr = $(this);
             let attr_val = []; // 属性值
             let scopeAttrType = tr.find('td:eq(0) select:eq(0)').val();
-            let scopeAttrName = '';
+            let scopeAttrName = tr.find('td:eq(0) select:eq(0)').find("option:selected").text();
+            if(scopeAttrName == '手动输入'){
+                scopeAttrName = tr.find('td:eq(0) input').val();
+            }
             switch (scopeAttrType) {
                 case 'checkbox':
                 case 'radio':
-                    scopeAttrName = tr.find('td:eq(0) select:eq(0)').find("option:selected").text();
+                    // scopeAttrName = tr.find('td:eq(0) select:eq(0)').find("option:selected").text();
                     tr.find('td:eq(1) input[type="' + scopeAttrType + '"]:checked').each(function (i, v) {
                         attr_val.push($(v).val());
                     });
                     break;
                 default:
-                    scopeAttrName = tr.find('td:eq(0) input').val();
+                    // scopeAttrName = tr.find('td:eq(0) input').val();
                     tr.find('td:eq(1) input').each(function () {
                         let ipt_val = $(this).val();
                         if (ipt_val) {
