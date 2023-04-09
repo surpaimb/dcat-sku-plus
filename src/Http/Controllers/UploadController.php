@@ -2,7 +2,7 @@
 
 namespace Dcat\Admin\Extension\DcatSkuPlus\Http\Controllers;
 
-use Dcat\Admin\Http\Controllers\AdminController;
+use Dcat\Admin\Controllers\AdminController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
