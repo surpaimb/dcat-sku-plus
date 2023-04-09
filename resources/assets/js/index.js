@@ -10,6 +10,7 @@
         this.currentAttributeName = "";
         this.currentSkuId = "";
         this.skuAttr = {};
+        this.skuIndex = 0;
         this.init();
     }
 
@@ -18,7 +19,7 @@
 
         let old_val = _this.wrap.find(".Js_sku_input").val();
         let params = _this.wrap.find(".Js_sku_params_input").val();
-        if (old_val) {
+        if (old_val && old_val != "null") {
             // 根据值生成DOM
             old_val = JSON.parse(old_val);
             // 处理规格名
@@ -27,7 +28,6 @@
             let attr_keys = Object.keys(attr_names);
             let attr_keys_len = attr_keys.length;
             let isFirst = true;
-            ;
             attr_keys.forEach(function (attr_key, index) {
                 // 规格名
                 let tr = tbody.find("tr").eq(index);
@@ -227,17 +227,11 @@
         trs.each(function () {
             let tr = $(this);
             let attr_val = []; // 属性值
-            // let scopeAttrType = tr.find("td:eq(0) select:eq(0)").val();
-            // let scopeAttrName = tr
-            //     .find("td:eq(0) select:eq(0)")
-            //     .find("option:selected")
-            //     .text();
-            // if (scopeAttrName == "手动输入") {
-            //     scopeAttrName = tr.find("td:eq(0) input").val();
-            // }
-            let scopeAttrType = tr.find("td:eq(0) input.input_attr_name").attr('attr_type');
+            let scopeAttrType = tr
+                .find("td:eq(0) input.input_attr_name")
+                .attr("attr_type");
             let scopeAttrName = tr.find("td:eq(0) input.input_attr_name").val();
-            
+
             switch (scopeAttrType) {
                 case "checkbox":
                 case "radio":
@@ -283,7 +277,9 @@
                 thead_html += '<th style="width: 80px">' + attr_name + "</th>";
             });
             thead_html +=
-                '<th data-field="pic" style="width: 102px">图片 </th>';
+            '<th data-field="pic" style="width: 102px">图片 </th>';
+            thead_html +=
+                '<th data-field="sku_no" style="width: 80px">编号</th>';
             thead_html +=
                 '<th data-field="stock">库存 <input type="text" class="form-control"></th>';
             thead_html +=
@@ -334,6 +330,8 @@
                 tbody_html +=
                     '<td data-field="pic"><div class="sku_img"><span class="Js_sku_upload"><i class="feather icon-upload-cloud"></i></span></div></td>';
                 tbody_html +=
+                    '<td data-field="sku_no"><input value="" type="text" class="form-control"></td>';
+                tbody_html +=
                     '<td data-field="stock"><input value="" type="text" class="form-control"></td>';
                 tbody_html +=
                     '<td data-field="price"><input value="" type="text" class="form-control"></td>';
@@ -349,14 +347,6 @@
                 tbody_html += "</tr>";
             });
             _this.wrap.find(".sku_edit_wrap tbody").html(tbody_html);
-            // 创建一个新的 defaultSkuMap 对象，用于在新的 SKU 组合中查找默认值
-            const defaultSkuMap = new Map();
-
-            // 将 default_sku 转换为 Map 对象，以便更快地查找匹配的 SKU 组合
-            default_sku.forEach(function (item_sku) {
-                const key = attr_names.map((attr_name) => item_sku[attr_name]).join('-');
-                defaultSkuMap.set(key, item_sku);
-            });
 
             if (default_sku) {
                 // 填充数据
@@ -595,6 +585,28 @@
         return html;
     };
 
+    // SKU.prototype.getHtml = function (innerHtml = '') {
+    //     let _this = this;
+    //     let skuAttributesArray = this.skuAttributes;
+    //     let html = '<tr><td><select class="form-control  attribute_selector"';
+    //     if (innerHtml.length > 0 && _this.currentSkuId == '') {
+    //         html += ' selected="selected"';
+    //     }
+    //     html += '><option value="input">手动输入</option>';
+    //     skuAttributesArray.forEach(function (v, i) {
+    //         html += ' <option value="' + v.attr_type + '" data-idx="' + i + '"';
+    //         if (innerHtml.length > 0 && v.id == _this.currentSkuId) {
+    //             html += ' selected="selected"';
+    //         }
+    //         html += '>' + v.attr_name + '</option>'
+    //     });
+    //     html += '</select><input type="text" class="form-control input_attr_name"></td><td><div class="sku_attr_val_wrap">' +
+    //         (innerHtml.length > 0 ? innerHtml : this.getAttributeHtml('input', this.skuAttr)) +
+    //         '</div></td><td><span class="btn btn-default Js_remove_attr_name">移除</span></td></tr>';
+
+    //     return html;
+    // };
+
     SKU.prototype.getHtml = function (
         innerHtml = "",
         attrName = "",
@@ -612,9 +624,11 @@
 
         // 设置 input 的 value
         html +=
-            '<input type="text" class="form-control input_attr_name'+
-            '" value="' + inputValue +
-            '" attr_type="' + attrType +
+            '<input type="text" class="form-control input_attr_name' +
+            '" value="' +
+            inputValue +
+            '" attr_type="' +
+            attrType +
             '"></td><td><div class="sku_attr_val_wrap">' +
             (innerHtml.length > 0
                 ? innerHtml
